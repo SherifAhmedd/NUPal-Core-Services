@@ -38,6 +38,10 @@ namespace NUPAL.Core.Infrastructure
             services.AddHttpClient<IJobService, Services.WuzzufJobService>();
             
             services.AddScoped<IDynamicSkillsService, Services.DynamicSkillsService>();
+            
+            // Register Resume Parsing Services
+            services.AddScoped<IPdfTextExtractorService, NUPAL.Core.Infrastructure.Services.PdfTextExtractorService>();
+            services.AddScoped<IResumeParsingService, NUPAL.Core.Infrastructure.Services.GroqResumeParsingService>();
 
             // Register background worker for automatic sync
             services.AddHostedService<PrecomputeBackgroundWorker>();
