@@ -39,6 +39,9 @@ namespace NUPAL.Core.Infrastructure
             
             services.AddScoped<IDynamicSkillsService, Services.DynamicSkillsService>();
             
+            // Register Resume Persistence
+            services.AddScoped<IResumeRepository, ResumeRepository>();
+            
             // Register Resume Parsing Services
             services.AddScoped<IPdfTextExtractorService, NUPAL.Core.Infrastructure.Services.PdfTextExtractorService>();
             services.AddScoped<IResumeParsingService, NUPAL.Core.Infrastructure.Services.GroqResumeParsingService>();
