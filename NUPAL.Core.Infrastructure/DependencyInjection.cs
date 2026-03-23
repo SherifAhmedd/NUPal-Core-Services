@@ -45,6 +45,7 @@ namespace NUPAL.Core.Infrastructure
             
             // Register Job Fit Analysis
             services.AddScoped<IJobFitService, JobFitService>();
+            services.AddScoped<IJobFitRepository, JobFitRepository>();
             
             // Register Resume Parsing Services
             services.AddScoped<IPdfTextExtractorService, PdfTextExtractorService>();

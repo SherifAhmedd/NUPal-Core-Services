@@ -133,13 +133,23 @@ STRICT ANALYSIS RULES:
    - If the JD requires a "Bachelor's Degree", "Graduate", or "X years of professional experience" and the candidate is still a student, this is a CRITICAL GAP (Red Flag).
    - Flag any seniority mismatch (e.g., Student applying for Senior/Lead role).
 
-2. ANTI-REPETITION POLICY:
+2. EXPERIENCE CALCULATION RULES (CRITICAL):
+   - If Candidate is a student or fresh grad, their full-time professional experience is 0 YEARS.
+   - Do NOT count academic projects, part-time student activities, or short-term summer internships as full-time professional years of experience.
+   - For example, if a JD asks for "0-2 years experience" and the candidate is a student, clearly state their professional experience is 0 years but they have internship/project exposure. Do NOT say "Candidate experience is 1 year". State exactly what they have (e.g., "You are a student with 0 years full-time professional experience").
+
+3. ANTI-REPETITION POLICY:
    - EACH field in the JSON must provide UNIQUE value. Do NOT repeat the same insight across 'detailedSummary', 'highlights', 'opportunities', and 'recommendations'.
    - If you mention a gap in 'detailedSummary', explain its TECHNICAL IMPACT in 'opportunities' and provide a FIX in 'recommendations'. Do not just restate the gap.
 
-3. DATA-DRIVEN INSIGHTS:
+4. DATA-DRIVEN INSIGHTS:
    - Use specific technologies, years, and metrics from both the CV and JD.
    - Be objective and critical. If the fit is 30%, explain exactly why without being discouraging but without sugarcoating.
+
+5. TONE & PERSPECTIVE (CRITICAL):
+   - You MUST speak DIRECTLY to the user as if you are having a 1-on-1 mentoring session with them.
+   - Use "you", "your CV", "your experience" instead of "the candidate", "the applicant", or "they".
+   - Every single field in the JSON (including notes, flags, gaps, and summaries) must be phrased as direct feedback to the user (e.g., "You have 0 years of experience", "Your degree is a strong match", "You need to focus on X").
 
 FIELD RULES (follow strictly before writing JSON):
 - matchedSkills: List EVERY keyword/technology/tool/framework/skill that appears in BOTH the JD and the CV. Zero exceptions. Do NOT group or summarize. Include ALL of them.
@@ -165,9 +175,9 @@ RETURN ONLY VALID JSON:
     "readiness":   0,
 
     "skillsNote":      "LLM reviewed X priority keywords and confirmed Y as covered.",
-    "experienceNote":  "Candidate experience vs JD requirement.",
-    "domainNote":      "Industry/domain alignment.",
-    "credentialsNote": "Degree status vs JD requirements.",
+    "experienceNote":  "Your exact professional experience vs JD requirement.",
+    "domainNote":      "Your industry/domain alignment.",
+    "credentialsNote": "Your degree status vs JD requirements.",
 
     "matchedSkills": [
       { "skill": "Exact keyword from JD", "evidence": "Where it appears in CV", "level": "Exposure | Practical | Advanced" }
