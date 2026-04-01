@@ -12,10 +12,16 @@ namespace Nupal.Core.Infrastructure.Repositories
         public ChatConversationRepository(IMongoDatabase db)
         {
             _col = db.GetCollection<ChatConversation>("chat_conversations");
-
-            var idx1 = new CreateIndexModel<ChatConversation>(
-                Builders<ChatConversation>.IndexKeys.Ascending(x => x.StudentId).Descending(x => x.LastActivityAt));
-            _col.Indexes.CreateOne(idx1);
+            try
+            {
+                var idx1 = new CreateIndexModel<ChatConversation>(
+                    Builders<ChatConversation>.IndexKeys.Ascending(x => x.StudentId).Descending(x => x.LastActivityAt));
+                _col.Indexes.CreateOne(idx1);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARNING] Failed to create indexes for ChatConversationRepository: {ex.Message}");
+            }
         }
 
         public async Task<ChatConversation> CreateAsync(ChatConversation convo)

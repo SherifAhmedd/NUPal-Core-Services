@@ -13,9 +13,16 @@ namespace Nupal.Core.Infrastructure.Repositories
         {
             _col = db.GetCollection<RlJob>("rl_jobs");
             
-            // Index on StudentId and CreatedAt for fast lookups
-            var indexKeys = Builders<RlJob>.IndexKeys.Descending(x => x.CreatedAt).Ascending(x => x.StudentId);
-            _col.Indexes.CreateOne(new CreateIndexModel<RlJob>(indexKeys));
+            try
+            {
+                // Index on StudentId and CreatedAt for fast lookups
+                var indexKeys = Builders<RlJob>.IndexKeys.Descending(x => x.CreatedAt).Ascending(x => x.StudentId);
+                _col.Indexes.CreateOne(new CreateIndexModel<RlJob>(indexKeys));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARNING] Failed to create indexes for RlJobRepository: {ex.Message}");
+            }
         }
 
         public async Task CreateAsync(RlJob job)

@@ -13,9 +13,16 @@ namespace Nupal.Core.Infrastructure.Repositories
         {
             _col = db.GetCollection<RlRecommendation>("rl_recommendations");
             
-            // Index on StudentId
-            var indexKeys = Builders<RlRecommendation>.IndexKeys.Descending(x => x.CreatedAt).Ascending(x => x.StudentId);
-            _col.Indexes.CreateOne(new CreateIndexModel<RlRecommendation>(indexKeys));
+            try
+            {
+                // Index on StudentId
+                var indexKeys = Builders<RlRecommendation>.IndexKeys.Descending(x => x.CreatedAt).Ascending(x => x.StudentId);
+                _col.Indexes.CreateOne(new CreateIndexModel<RlRecommendation>(indexKeys));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARNING] Failed to create indexes for RlRecommendationRepository: {ex.Message}");
+            }
         }
 
         public async Task CreateAsync(RlRecommendation recommendation)

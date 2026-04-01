@@ -12,10 +12,16 @@ namespace Nupal.Core.Infrastructure.Repositories
         public JobFitRepository(IMongoDatabase db)
         {
             _col = db.GetCollection<JobFitResult>("job_fit_results");
-
-            // Index on StudentEmail for fast history lookup
-            var indexKey = Builders<JobFitResult>.IndexKeys.Ascending(x => x.StudentEmail);
-            _col.Indexes.CreateOne(new CreateIndexModel<JobFitResult>(indexKey));
+            try
+            {
+                // Index on StudentEmail for fast history lookup
+                var indexKey = Builders<JobFitResult>.IndexKeys.Ascending(x => x.StudentEmail);
+                _col.Indexes.CreateOne(new CreateIndexModel<JobFitResult>(indexKey));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARNING] Failed to create indexes for JobFitRepository: {ex.Message}");
+            }
         }
 
         public async Task SaveAsync(JobFitResult result)

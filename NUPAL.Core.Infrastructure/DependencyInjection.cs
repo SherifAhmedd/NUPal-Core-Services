@@ -16,7 +16,14 @@ namespace NUPAL.Core.Infrastructure
                            ?? Environment.GetEnvironmentVariable("MONGO_URL")
                            ?? throw new InvalidOperationException("MongoDB connection string is not configured. Please provide 'MONGO_URL' in appsettings or environment variables.");
 
-            services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoUrl));
+            services.AddSingleton<IMongoClient>(_ =>
+            {
+                var settings = MongoClientSettings.FromConnectionString(mongoUrl);
+                // Reduce timeouts to prevent long hangs during DNS/connectivity issues
+                settings.ConnectTimeout = TimeSpan.FromSeconds(10);
+                settings.ServerSelectionTimeout = TimeSpan.FromSeconds(10);
+                return new MongoClient(settings);
+            });
             services.AddSingleton<IMongoDatabase>(sp =>
             {
                 var client = sp.GetRequiredService<IMongoClient>();

@@ -25,10 +25,17 @@ namespace Nupal.Core.Infrastructure.Repositories
         {
             _col = db.GetCollection<ResumeAnalysis>("resume_analyses");
             
-            // Create Index for StudentEmail for fast history lookup
-            var indexKeyDefinition = Builders<ResumeAnalysis>.IndexKeys.Ascending(x => x.StudentEmail);
-            var indexModel = new CreateIndexModel<ResumeAnalysis>(indexKeyDefinition);
-            _col.Indexes.CreateOne(indexModel);
+            try
+            {
+                // Create Index for StudentEmail for fast history lookup
+                var indexKeyDefinition = Builders<ResumeAnalysis>.IndexKeys.Ascending(x => x.StudentEmail);
+                var indexModel = new CreateIndexModel<ResumeAnalysis>(indexKeyDefinition);
+                _col.Indexes.CreateOne(indexModel);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARNING] Failed to create indexes for ResumeRepository: {ex.Message}");
+            }
         }
 
         public async Task SaveAsync(ResumeAnalysis analysis)

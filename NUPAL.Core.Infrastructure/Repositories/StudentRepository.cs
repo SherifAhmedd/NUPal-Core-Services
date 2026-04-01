@@ -23,12 +23,20 @@ namespace Nupal.Core.Infrastructure.Repositories
         public StudentRepository(IMongoDatabase db)
         {
             _col = db.GetCollection<Student>("students");
-            var idxs = new[]
+            try
             {
-                new CreateIndexModel<Student>(Builders<Student>.IndexKeys.Ascending("Account.Email"), new CreateIndexOptions { Unique = true }),
-                new CreateIndexModel<Student>(Builders<Student>.IndexKeys.Ascending("Account.Id"), new CreateIndexOptions { Unique = true })
-            };
-            _col.Indexes.CreateMany(idxs);
+                var idxs = new[]
+                {
+                    new CreateIndexModel<Student>(Builders<Student>.IndexKeys.Ascending("Account.Email"), new CreateIndexOptions { Unique = true }),
+                    new CreateIndexModel<Student>(Builders<Student>.IndexKeys.Ascending("Account.Id"), new CreateIndexOptions { Unique = true })
+                };
+                _col.Indexes.CreateMany(idxs);
+            }
+            catch (Exception ex)
+            {
+                // Log and continue - index creation might fail due to transient connectivity/DNS issues
+                Console.WriteLine($"[WARNING] Failed to create indexes for StudentRepository: {ex.Message}");
+            }
         }
 
         public async Task UpsertAsync(Student s)
