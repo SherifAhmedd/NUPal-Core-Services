@@ -31,7 +31,7 @@ namespace NUPAL.Core.API.Controllers
 
         [HttpPost("parse")]
         [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max
-        public async Task<IActionResult> Parse([FromForm] IFormFile file, CancellationToken ct)
+        public async Task<IActionResult> Parse(IFormFile file, CancellationToken ct)
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { error = "No file provided." });
