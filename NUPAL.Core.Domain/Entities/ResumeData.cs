@@ -1,9 +1,14 @@
 using System.Text.Json.Serialization;
 
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Nupal.Domain.Entities
 {
+    [BsonIgnoreExtraElements]
     public class ResumeData
     {
+        [JsonPropertyName("firstName")]     public string? FirstName { get; set; }
+        [JsonPropertyName("lastName")]      public string? LastName { get; set; }
         [JsonPropertyName("fullName")]      public string? FullName { get; set; }
         [JsonPropertyName("email")]         public string? Email { get; set; }
         [JsonPropertyName("phone")]         public string? Phone { get; set; }
@@ -22,6 +27,7 @@ namespace Nupal.Domain.Entities
         [JsonPropertyName("awards")]        public List<string> Awards { get; set; } = [];
     }
 
+    [BsonIgnoreExtraElements]
     public class ResumeExperience
     {
         [JsonPropertyName("title")]     public string? Title { get; set; }
@@ -33,6 +39,7 @@ namespace Nupal.Domain.Entities
         [JsonPropertyName("bullets")]   public List<string> Bullets { get; set; } = [];
     }
 
+    [BsonIgnoreExtraElements]
     public class ResumeEducation
     {
         [JsonPropertyName("degree")]      public string? Degree { get; set; }
@@ -44,6 +51,7 @@ namespace Nupal.Domain.Entities
         [JsonPropertyName("gpa")]         public string? GPA { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class ResumeProject
     {
         [JsonPropertyName("name")]         public string? Name { get; set; }

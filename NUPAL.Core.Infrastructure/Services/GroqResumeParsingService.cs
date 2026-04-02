@@ -25,21 +25,22 @@ namespace NUPAL.Core.Infrastructure.Services
 You are a professional resume parser. Your goal is to extract ALL information from the provided resume text with 100% accuracy.
 CRITICAL: 
 - Extracts must be VERBATIM. Do NOT summarize. Do NOT change phrasing. Do NOT shorten.
-- For the 'summary' and 'projects[].description', copy the entire text as it appears in the resume.
+- If ANY section (like Experience, Education, Projects) is MISSING from the resume, you MUST return an empty array [] or null for it. DO NOT hallucinate or pull text from other sections.
+- For the 'projects[].description', copy the entire text as it appears.
 - For 'experience[].bullets', copy each bullet point exactly as written.
-- If a project has a long description or a list of features/tasks, extract them FULLY.
 - Return ONLY a valid JSON object — no markdown, no explanation, just raw JSON.
 
 Return this exact JSON structure (use null for missing fields, empty arrays [] for missing lists):
 {
-  "fullName": "string or null",
+  "firstName": "string or null (Extract ONLY the first name. If NO name is found, return null. DO NOT use section headers like 'Professional Summary')",
+  "lastName": "string or null (Extract ONLY the last name. If NO name is found, return null. DO NOT use section headers)",
   "email": "string or null",
   "phone": "string or null",
   "location": "string or null",
   "linkedIn": "string or null",
   "gitHub": "string or null",
   "website": "string or null",
-  "summary": "MANDATORY: COPY-PASTE character-for-character every single word from the 'Summary' or 'Profile' section. Do NOT rephrase. Do NOT summarize. If the section is long, include it ALL.",
+  "summary": "string or null. Extract ONLY the text explicitly written under the 'Summary' or 'Profile' section. STOP at the next heading. If the section is empty or missing, return null. DO NOT summarize the resume yourself.",
   "technicalSkills": ["skill1", "skill2"],
   "softSkills": ["skill1", "skill2"],
   "experience": [
@@ -133,6 +134,15 @@ RESUME TEXT:
             // Parse the JSON returned by LLaMA
             var parsed = JsonSerializer.Deserialize<ParsedResumeDto>(messageContent, _jsonOpts)
                 ?? throw new InvalidOperationException("Failed to deserialize parsed resume.");
+
+            // Cleanly reconstruct FullName avoiding any extraneous metadata
+            var combinedName = $"{parsed.FirstName} {parsed.LastName}".Trim();
+            parsed.FullName = string.IsNullOrWhiteSpace(combinedName) ? parsed.FullName : combinedName;
+
+            // Optional general cleanup of typical LLM artifacts
+            if (!string.IsNullOrWhiteSpace(parsed.FullName)) {
+                parsed.FullName = parsed.FullName.Replace("|", "").Trim(' ', ',');
+            }
 
             return parsed;
         }
