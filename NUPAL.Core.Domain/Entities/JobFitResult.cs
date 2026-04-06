@@ -11,6 +11,7 @@ namespace Nupal.Domain.Entities
 
         public string StudentEmail { get; set; } = string.Empty;
         public string JobUrl { get; set; } = string.Empty;
+        public string JobText { get; set; } = string.Empty;
         public DateTime AnalyzedAt { get; set; } = DateTime.UtcNow;
 
         // Snapshot of the full analysis as JSON to avoid circular dependency

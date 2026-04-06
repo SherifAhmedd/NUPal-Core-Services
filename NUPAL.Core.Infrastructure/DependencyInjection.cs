@@ -42,23 +42,14 @@ namespace NUPAL.Core.Infrastructure
             services.AddHttpClient<IRlService, RlService>();
             services.AddScoped<IPrecomputeService, PrecomputeService>();
 
-            // Register Wuzzuf job scraping service
             services.AddHttpClient<IJobService, WuzzufJobService>();
             
             services.AddScoped<IDynamicSkillsService, DynamicSkillsService>();
             
-            // Register Resume Persistence
             services.AddScoped<IResumeRepository, ResumeRepository>();
             
-            // Register Job Fit Analysis
-            services.AddScoped<IJobFitService, JobFitService>();
             services.AddScoped<IJobFitRepository, JobFitRepository>();
-            
-            // Register Resume Parsing Services
-            services.AddScoped<IPdfTextExtractorService, PdfTextExtractorService>();
-            services.AddScoped<IResumeParsingService, GroqResumeParsingService>();
 
-            // Register background worker for automatic sync
             services.AddHostedService<PrecomputeBackgroundWorker>();
 
             return services;
