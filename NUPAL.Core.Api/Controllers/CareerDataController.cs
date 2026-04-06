@@ -53,7 +53,15 @@ namespace NUPAL.Core.Api.Controllers
                 return Forbid();
 
             var rows = await _resumeRepository.GetByStudentEmailAsync(studentEmail.Trim());
-            return Ok(rows);
+            var payload = rows.Select(x => new
+            {
+                Id = x.Id.ToString(),
+                x.StudentEmail,
+                x.FileName,
+                x.AnalyzedAt,
+                x.Data
+            });
+            return Ok(payload);
         }
 
         [HttpGet("resume-analyses/{id}")]
@@ -68,7 +76,14 @@ namespace NUPAL.Core.Api.Controllers
             if (row == null || !EmailEquals(row.StudentEmail, studentEmail))
                 return NotFound(new { detail = "Resume not found" });
 
-            return Ok(row);
+            return Ok(new
+            {
+                Id = row.Id.ToString(),
+                row.StudentEmail,
+                row.FileName,
+                row.AnalyzedAt,
+                row.Data
+            });
         }
 
         [HttpDelete("resume-analyses/{id}")]
@@ -121,7 +136,16 @@ namespace NUPAL.Core.Api.Controllers
                 return Forbid();
 
             var rows = await _jobFitRepository.GetByStudentEmailAsync(studentEmail.Trim());
-            return Ok(rows);
+            var payload = rows.Select(x => new
+            {
+                Id = x.Id.ToString(),
+                x.StudentEmail,
+                x.JobUrl,
+                x.JobText,
+                x.AnalyzedAt,
+                x.AnalysisJson
+            });
+            return Ok(payload);
         }
 
         [HttpGet("job-fit-results/{id}")]
@@ -136,7 +160,15 @@ namespace NUPAL.Core.Api.Controllers
             if (row == null || !EmailEquals(row.StudentEmail, studentEmail))
                 return NotFound(new { detail = "Job fit not found" });
 
-            return Ok(row);
+            return Ok(new
+            {
+                Id = row.Id.ToString(),
+                row.StudentEmail,
+                row.JobUrl,
+                row.JobText,
+                row.AnalyzedAt,
+                row.AnalysisJson
+            });
         }
 
         [HttpDelete("job-fit-results/{id}")]
