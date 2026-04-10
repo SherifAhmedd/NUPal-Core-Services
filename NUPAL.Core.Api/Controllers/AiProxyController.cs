@@ -31,7 +31,6 @@ public class AiProxyController : ControllerBase
 
     [Route("{*path}")]
     [DisableRequestSizeLimit]
-    [RequestFormLimits(MultipartBodyLengthLimit = 20 * 1024 * 1024)]
     public async Task Proxy(string path)
     {
         var baseUrl = _configuration["CareerServices:Url"]?.TrimEnd('/');
@@ -58,6 +57,12 @@ public class AiProxyController : ControllerBase
         // DO NOT set Content-Length manually — HttpClient will compute it correctly from the StreamContent.
         if (!HttpMethods.IsGet(Request.Method) && !HttpMethods.IsHead(Request.Method))
         {
+            // Ensure the body stream is at the start — some ASP.NET Core middleware may have
+            // partially advanced the read pointer (e.g. auth, logging, size-limit middleware).
+            Request.EnableBuffering();
+            if (Request.Body.CanSeek)
+                Request.Body.Position = 0;
+
             var streamContent = new StreamContent(Request.Body);
             if (!string.IsNullOrEmpty(Request.ContentType))
             {
