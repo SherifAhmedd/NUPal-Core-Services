@@ -42,6 +42,12 @@ public class AIServiceKeepAliveWorker : BackgroundService
                 {
                     await PingService(agentServiceUrl, "Agent Service", stoppingToken);
                 }
+
+                var careerServiceUrl = _configuration["CareerServices:Url"];
+                if (!string.IsNullOrEmpty(careerServiceUrl))
+                {
+                    await PingService(careerServiceUrl, "Career Services", stoppingToken);
+                }
             }
             catch (Exception ex)
             {
