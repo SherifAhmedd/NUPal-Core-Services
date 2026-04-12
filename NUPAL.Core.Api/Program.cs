@@ -57,4 +57,13 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogCritical(ex, "Server crash during startup or shutdown sequence.");
+    throw;
+}
