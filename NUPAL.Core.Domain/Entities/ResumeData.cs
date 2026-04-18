@@ -57,6 +57,7 @@ namespace Nupal.Domain.Entities
         [JsonPropertyName("name")]         public string? Name { get; set; }
         [JsonPropertyName("description")]  public string? Description { get; set; }
         [JsonPropertyName("technologies")] public List<string> Technologies { get; set; } = [];
+        [JsonPropertyName("bullets")]      public List<string> Bullets { get; set; } = [];
         [JsonPropertyName("link")]         public string? Link { get; set; }
     }
 }
