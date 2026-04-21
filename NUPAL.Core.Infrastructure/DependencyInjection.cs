@@ -63,6 +63,9 @@ namespace NUPAL.Core.Infrastructure
 
             services.AddHostedService<PrecomputeBackgroundWorker>();
 
+            services.AddSingleton<IBlockRepository, BlockRepository>();
+            services.AddSingleton<ISchedulingService, SchedulingService>();
+
             return services;
         }
     }
