@@ -107,7 +107,7 @@ namespace NUPAL.Core.API.Controllers
         }
         [HttpGet("{id}/rl-recommendation")]
         [Microsoft.AspNetCore.Authorization.AllowAnonymous]
-        public async Task<IActionResult> GetLatestRlRecommendation([FromRoute] string id, [FromServices] IRlRecommendationRepository rlRepo)
+        public async Task<IActionResult> GetLatestRlRecommendation([FromRoute] string id, [FromServices] IRlRecommendationRepository rlRepo, [FromServices] ICourseMappingRepository mappingRepo)
         {
             try
             {
@@ -117,11 +117,26 @@ namespace NUPAL.Core.API.Controllers
                 var rlRecommendation = await rlRepo.GetLatestByStudentIdAsync(id);
                 if (rlRecommendation == null) return NotFound(new { error = "no_recommendation_found" });
 
+                var mappings = await mappingRepo.GetAllAsync();
+                
+                var displayCourses = rlRecommendation.Courses.Select(c => 
+                {
+                    var lower = c.Trim().ToLower();
+                    var mapping = mappings.FirstOrDefault(m => 
+                        (m.CourseCode != null && m.CourseCode.ToLower() == lower) ||
+                        (m.PolicyName != null && m.PolicyName.ToLower() == lower) ||
+                        (m.BlockNames != null && m.BlockNames.Any(b => b.ToLower() == lower))
+                    );
+                    
+                    // Return the clear PolicyName if found, otherwise fallback to the raw course code
+                    return (mapping != null && !string.IsNullOrWhiteSpace(mapping.PolicyName)) ? mapping.PolicyName : c;
+                }).Distinct().ToList();
+
                 return Ok(new
                 {
                     id = rlRecommendation.Id.ToString(),
                     termIndex = rlRecommendation.TermIndex,
-                    courses = rlRecommendation.Courses, // This is the string list of predicted courses
+                    courses = displayCourses,
                     slates = rlRecommendation.SlatesByTerm,
                     metrics = rlRecommendation.Metrics,
                     createdAt = rlRecommendation.CreatedAt

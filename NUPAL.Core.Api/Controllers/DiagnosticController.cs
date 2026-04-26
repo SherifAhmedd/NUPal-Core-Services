@@ -75,13 +75,8 @@ namespace NUPAL.Core.API.Controllers
             if (string.IsNullOrWhiteSpace(studentId))
                 return Unauthorized(new { error = "unauthorized" });
 
-            // Get recent conversations by querying messages
             var allConversations = new List<string>();
             var conversationDetails = new List<object>();
-
-            // Get recent messages for this student to find their conversations
-            // Note: This is a workaround since we don't have GetByStudentIdAsync
-            // You may need to add this method to IChatConversationRepository
 
             return Ok(new
             {

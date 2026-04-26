@@ -27,7 +27,7 @@ namespace NUPAL.Core.Api.Controllers
         {
             try
             {
-                var blocks = await _schedulingService.GetBlocksAsync(level);
+                var blocks = await _schedulingService.GetMappedBlocksAsync(level);
                 return Ok(blocks);
             }
             catch (Exception ex)
@@ -43,7 +43,7 @@ namespace NUPAL.Core.Api.Controllers
         {
             try
             {
-                var block = await _schedulingService.GetBlockAsync(blockId);
+                var block = await _schedulingService.GetMappedBlockAsync(blockId);
                 if (block == null)
                     return NotFound(new { message = $"Block '{blockId}' not found" });
 
@@ -87,6 +87,27 @@ namespace NUPAL.Core.Api.Controllers
             {
                 _logger.LogError(ex, "Error fetching instructors");
                 return StatusCode(500, new { message = "Error fetching instructors" });
+            }
+        }
+
+        [HttpPost("instructors/categorized")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCategorizedInstructors([FromBody] List<string> courseNames, [FromQuery] string? level = null)
+        {
+            try
+            {
+                if (courseNames == null || courseNames.Count == 0)
+                {
+                    return Ok(new CategorizedInstructorsDto());
+                }
+
+                var result = await _schedulingService.GetCategorizedInstructorsAsync(courseNames, level);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching categorized instructors");
+                return StatusCode(500, new { message = "Error fetching categorized instructors" });
             }
         }
 
