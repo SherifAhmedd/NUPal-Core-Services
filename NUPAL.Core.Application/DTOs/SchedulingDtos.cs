@@ -2,8 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace NUPAL.Core.Application.DTOs
 {
-    // ─── Raw Block Data (matches JSON file + MongoDB document structure) ─────────
-
+    
     public class RawBlockCourseDto
     {
         [JsonPropertyName("course_name")]
@@ -100,6 +99,7 @@ namespace NUPAL.Core.Application.DTOs
         public string? Room      { get; set; }
         public string? Section   { get; set; }
         public string? Subtype   { get; set; }
+        public string? InstructorType { get; set; }
         public string? Color     { get; set; }
     }
 
@@ -108,6 +108,12 @@ namespace NUPAL.Core.Application.DTOs
         public string BlockId      { get; set; } = "";
         public int    TotalCredits { get; set; }
         public List<CourseSessionDto> Courses { get; set; } = new();
+    }
+
+    public class CategorizedInstructorsDto
+    {
+        public List<string> Doctors { get; set; } = new();
+        public List<string> TAs { get; set; } = new();
     }
 
     public class ScoreBreakdownDto
