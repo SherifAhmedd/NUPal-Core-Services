@@ -106,6 +106,8 @@ namespace NUPAL.Core.Application.DTOs
     public class BlockDto
     {
         public string BlockId      { get; set; } = "";
+        public string? Semester    { get; set; }
+        public string? Major       { get; set; }
         public int    TotalCredits { get; set; }
         public List<CourseSessionDto> Courses { get; set; } = new();
     }

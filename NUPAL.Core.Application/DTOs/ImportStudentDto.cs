@@ -24,6 +24,9 @@ namespace NUPAL.Core.Application.DTOs
 
         [JsonPropertyName("password")]
         public string Password { get; set; }
+
+        [JsonPropertyName("role")]
+        public string? Role { get; set; }
     }
 
     public class EducationJson
