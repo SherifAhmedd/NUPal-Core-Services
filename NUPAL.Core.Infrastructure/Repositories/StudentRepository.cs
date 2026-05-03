@@ -49,6 +49,7 @@ namespace Nupal.Core.Infrastructure.Repositories
                 .Set(x => x.Account.Email, s.Account.Email)
                 .Set(x => x.Account.Name, s.Account.Name)
                 .Set(x => x.Account.PasswordHash, s.Account.PasswordHash)
+                .Set(x => x.Account.Role, s.Account.Role)
                 .Set(x => x.Education.TotalCredits, s.Education.TotalCredits)
                 .Set(x => x.Education.NumSemesters, s.Education.NumSemesters)
                 .Set(x => x.Education.Semesters, s.Education.Semesters)
