@@ -50,10 +50,7 @@ namespace NUPAL.Core.Infrastructure.Services.Scheduling
                     {
                         var mapping = mappings.FirstOrDefault(m => 
                             (m.CourseCode != null && m.CourseCode.Equals(name, StringComparison.OrdinalIgnoreCase)) ||
-                            (m.PolicyName != null && m.PolicyName.Equals(name, StringComparison.OrdinalIgnoreCase)) ||
-                            (m.AcademicPlanNames != null && m.AcademicPlanNames.Any(an => an.Equals(name, StringComparison.OrdinalIgnoreCase))) ||
-                            (m.BlockNames != null && m.BlockNames.Any(bn => bn.Equals(name, StringComparison.OrdinalIgnoreCase))) ||
-                            (m.TrackNames != null && m.TrackNames.Any(tn => tn.Equals(name, StringComparison.OrdinalIgnoreCase))));
+                            m.GetAllNames().Any(n => n.Equals(name, StringComparison.OrdinalIgnoreCase)));
                         
                         if (mapping != null && !string.IsNullOrEmpty(mapping.CourseCode))
                         {
@@ -110,10 +107,7 @@ namespace NUPAL.Core.Infrastructure.Services.Scheduling
                     {
                         var mapping = mappings.FirstOrDefault(m => 
                             (m.CourseCode != null && m.CourseCode.Equals(rawName, StringComparison.OrdinalIgnoreCase)) ||
-                            (m.PolicyName != null && m.PolicyName.Equals(rawName, StringComparison.OrdinalIgnoreCase)) ||
-                            (m.AcademicPlanNames != null && m.AcademicPlanNames.Any(an => an.Equals(rawName, StringComparison.OrdinalIgnoreCase))) ||
-                            (m.BlockNames != null && m.BlockNames.Any(bn => bn.Equals(rawName, StringComparison.OrdinalIgnoreCase))) ||
-                            (m.TrackNames != null && m.TrackNames.Any(tn => tn.Equals(rawName, StringComparison.OrdinalIgnoreCase))));
+                            m.GetAllNames().Any(n => n.Equals(rawName, StringComparison.OrdinalIgnoreCase)));
                         
                         if (mapping != null && !string.IsNullOrEmpty(mapping.CourseCode))
                         {
@@ -165,6 +159,8 @@ namespace NUPAL.Core.Infrastructure.Services.Scheduling
             return new BlockDto
             {
                 BlockId = raw.BlockId,
+                Semester = raw.Semester,
+                Major = raw.Major,
                 TotalCredits = lectureCourseCount * 3,
                 Courses = sessions,
             };
