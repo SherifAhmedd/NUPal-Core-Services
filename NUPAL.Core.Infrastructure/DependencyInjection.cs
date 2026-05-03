@@ -44,8 +44,7 @@ namespace NUPAL.Core.Infrastructure
 
             services.AddHttpClient<IJobService, WuzzufJobService>();
             
-            // Named client for AI Proxy with custom timeout and SSL bypass for local dev
-            services.AddHttpClient("CareerServicesProxy", client => 
+            services.AddHttpClient<IAiService, AiService>(client => 
             {
                 client.Timeout = TimeSpan.FromMinutes(3);
                 client.DefaultRequestHeaders.Add("User-Agent", "NUPAL-Proxy/1.0");
@@ -62,11 +61,14 @@ namespace NUPAL.Core.Infrastructure
             services.AddScoped<IJobFitRepository, JobFitRepository>();
             services.AddScoped<ICourseMappingRepository, CourseMappingRepository>();
             services.AddScoped<ICourseNormalizationService, CourseNormalizationService>();
+            services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
 
             services.AddHostedService<PrecomputeBackgroundWorker>();
 
             services.AddSingleton<IBlockRepository, BlockRepository>();
             services.AddSingleton<ISchedulingService, SchedulingService>();
+
+            services.AddScoped<IAdminService, AdminService>();
 
             return services;
         }

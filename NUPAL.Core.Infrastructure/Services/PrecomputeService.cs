@@ -85,7 +85,9 @@ namespace Nupal.Core.Infrastructure.Services
 
         public async Task<SyncResult> SyncAllStudentsAsync(bool isSimulation = false)
         {
-            var students = await _studentRepo.GetAllAsync();
+            var students = (await _studentRepo.GetAllAsync())
+                .Where(s => string.IsNullOrWhiteSpace(s.Account.Role) || s.Account.Role.ToLower() != "admin")
+                .ToList();
             var result = new SyncResult { TotalStudents = students.Count() };
 
             foreach (var student in students)

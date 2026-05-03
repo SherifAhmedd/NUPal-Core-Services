@@ -21,6 +21,22 @@ namespace NUPAL.Core.Api.Controllers
         }
 
 
+        [HttpGet("active-semester")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveSemester()
+        {
+            try
+            {
+                var semester = await _schedulingService.GetActiveSemesterAsync();
+                return Ok(new { semester });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching active semester");
+                return StatusCode(500, new { message = "Error fetching active semester" });
+            }
+        }
+
         [HttpGet("blocks")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBlocks([FromQuery] string? level = null)

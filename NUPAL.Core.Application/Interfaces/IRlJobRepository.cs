@@ -10,5 +10,6 @@ namespace NUPAL.Core.Application.Interfaces
         Task<RlJob?> GetByIdAsync(string id);
         Task<RlJob?> GetLatestByStudentIdAsync(string studentId);
         Task<IEnumerable<RlJob>> GetActiveJobsAsync();
+        Task DeleteAsync(string id);
     }
 }

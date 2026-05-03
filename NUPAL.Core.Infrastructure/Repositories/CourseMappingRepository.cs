@@ -28,10 +28,6 @@ namespace Nupal.Core.Infrastructure.Repositories
                 var idxs = new[]
                 {
                     new CreateIndexModel<CourseMapping>(Builders<CourseMapping>.IndexKeys.Ascending(x => x.CourseCode), new CreateIndexOptions { Unique = true }),
-                    new CreateIndexModel<CourseMapping>(Builders<CourseMapping>.IndexKeys.Ascending(x => x.PolicyName)),
-                    new CreateIndexModel<CourseMapping>(Builders<CourseMapping>.IndexKeys.Ascending(x => x.BlockNames)),
-                    new CreateIndexModel<CourseMapping>(Builders<CourseMapping>.IndexKeys.Ascending(x => x.TrackNames)),
-                    new CreateIndexModel<CourseMapping>(Builders<CourseMapping>.IndexKeys.Ascending(x => x.AcademicPlanNames))
                 };
                 _col.Indexes.CreateMany(idxs);
             }
@@ -55,10 +51,7 @@ namespace Nupal.Core.Infrastructure.Repositories
             var all = await _col.Find(_ => true).ToListAsync();
             
             return all.FirstOrDefault(x => 
-                (x.PolicyName != null && x.PolicyName.ToLower() == lowerName) ||
-                (x.BlockNames != null && x.BlockNames.Any(b => b.ToLower() == lowerName)) ||
-                (x.TrackNames != null && x.TrackNames.Any(t => t.ToLower() == lowerName)) ||
-                (x.AcademicPlanNames != null && x.AcademicPlanNames.Any(a => a.ToLower() == lowerName))
+                x.CourseNames != null && x.CourseNames.Any(n => n.ToLower() == lowerName)
             );
         }
 

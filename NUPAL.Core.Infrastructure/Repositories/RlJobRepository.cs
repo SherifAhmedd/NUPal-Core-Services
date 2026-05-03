@@ -74,10 +74,13 @@ namespace Nupal.Core.Infrastructure.Repositories
 
         public async Task<IEnumerable<RlJob>> GetActiveJobsAsync()
         {
-            // Debugging: Return ALL jobs to see failed/finished ones too
-            // var filter = Builders<RlJob>.Filter.In(x => x.Status, new[] { JobStatus.Queued, JobStatus.Running });
             var filter = Builders<RlJob>.Filter.Empty;
             return await _col.Find(filter).SortByDescending(x => x.CreatedAt).Limit(10).ToListAsync();
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            await _col.DeleteOneAsync(x => x.Id == ObjectId.Parse(id));
         }
     }
 }

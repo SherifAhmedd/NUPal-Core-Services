@@ -47,13 +47,21 @@ namespace NUPAL.Core.Api.Controllers
 
             await _repository.DeleteAllAsync();
 
-            var mappings = data.Select(kvp => new CourseMapping
-            {
-                CourseCode = kvp.Value.Code,
-                PolicyName = kvp.Value.PolicyName,
-                BlockNames = kvp.Value.BlockNames ?? new(),
-                TrackNames = kvp.Value.TrackNames ?? new(),
-                AcademicPlanNames = kvp.Value.AcademicPlanNames ?? new()
+            var mappings = data.Select(kvp => {
+                var m = new CourseMapping
+                {
+                    CourseCode = kvp.Value.Code,
+                    CourseNames = new List<string>()
+                };
+                
+                // Migrate legacy names from DTO to CourseNames array if they exist
+                if (!string.IsNullOrEmpty(kvp.Value.PolicyName)) m.CourseNames.Add(kvp.Value.PolicyName);
+                if (kvp.Value.BlockNames != null) m.CourseNames.AddRange(kvp.Value.BlockNames);
+                if (kvp.Value.TrackNames != null) m.CourseNames.AddRange(kvp.Value.TrackNames);
+                if (kvp.Value.AcademicPlanNames != null) m.CourseNames.AddRange(kvp.Value.AcademicPlanNames);
+                
+                m.CourseNames = m.CourseNames.Where(n => !string.IsNullOrWhiteSpace(n)).Distinct().ToList();
+                return m;
             }).ToList();
 
             await _repository.AddRangeAsync(mappings);

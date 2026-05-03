@@ -12,7 +12,6 @@ namespace NUPAL.Core.Application.Services
     {
         private readonly IStudentRepository _repo;
         private readonly IPrecomputeService _precomputeService;
-
         public StudentService(IStudentRepository repo, IPrecomputeService precomputeService)
         {
             _repo = repo;
@@ -45,7 +44,8 @@ namespace NUPAL.Core.Application.Services
                     Id = dto.Account.Id,
                     Email = dto.Account.Email.ToLower(),
                     Name = dto.Account.Name,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Account.Password, workFactor: 10)
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Account.Password, workFactor: 10),
+                    Role = string.IsNullOrWhiteSpace(dto.Account.Role) ? "student" : dto.Account.Role.ToLower()
                 },
                 Education = new Education
                 {
@@ -92,6 +92,9 @@ namespace NUPAL.Core.Application.Services
                 return null;
             }
 
+            // Role directly from database
+            var role = string.IsNullOrWhiteSpace(s.Account.Role) ? "student" : s.Account.Role.ToLower();
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(jwtKey);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -100,7 +103,8 @@ namespace NUPAL.Core.Application.Services
                 {
                     new Claim(ClaimTypes.NameIdentifier, s.Account.Id),
                     new Claim(ClaimTypes.Email, s.Account.Email),
-                    new Claim(ClaimTypes.Name, s.Account.Name)
+                    new Claim(ClaimTypes.Name, s.Account.Name),
+                    new Claim(ClaimTypes.Role, role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 Issuer = jwtIssuer,

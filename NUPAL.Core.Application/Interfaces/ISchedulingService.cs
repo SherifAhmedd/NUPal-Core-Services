@@ -17,5 +17,7 @@ namespace NUPAL.Core.Application.Interfaces
         Task<IEnumerable<RecommendationResultDto>> RecommendAsync(RecommendationRequestDto request);
 
         Task<int> SeedBlocksAsync(IEnumerable<RawBlockDto> blocks);
+        Task<string> GetActiveSemesterAsync();
+        Task InvalidateCacheAsync();
     }
 }

@@ -34,12 +34,9 @@ namespace Nupal.Core.Infrastructure.Services
             if (byCode != null && !string.IsNullOrEmpty(byCode.CourseCode))
                 return byCode.CourseCode;
 
-            // Then try by Name
+            // Then try by Name (checking all aliases)
             var byName = _cachedMappings.FirstOrDefault(m => 
-                (m.PolicyName != null && m.PolicyName.ToLower() == lowerName) ||
-                (m.BlockNames != null && m.BlockNames.Any(b => b.ToLower() == lowerName)) ||
-                (m.TrackNames != null && m.TrackNames.Any(t => t.ToLower() == lowerName)) ||
-                (m.AcademicPlanNames != null && m.AcademicPlanNames.Any(a => a.ToLower() == lowerName))
+                m.GetAllNames().Any(name => name.ToLower() == lowerName)
             );
 
             if (byName != null && !string.IsNullOrEmpty(byName.CourseCode))

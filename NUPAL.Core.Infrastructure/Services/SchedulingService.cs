@@ -25,8 +25,19 @@ namespace NUPAL.Core.Infrastructure.Services
             _logger = logger;
             _scopeFactory = scopeFactory;
         }
-        public async Task<IEnumerable<RawBlockDto>> GetBlocksAsync(string? level = null) =>
-            await GetCachedAsync(level);
+        public async Task<IEnumerable<RawBlockDto>> GetBlocksAsync(string? level = null)
+        {
+            var rawBlocks = await GetCachedAsync(level);
+            
+            using var scope = _scopeFactory.CreateScope();
+            var settingsRepo = scope.ServiceProvider.GetRequiredService<ISystemSettingsRepository>();
+            var settings = await settingsRepo.GetSettingsAsync();
+            var activeSemester = settings.ActiveSemester;
+
+            return rawBlocks
+                .Where(b => string.IsNullOrEmpty(b.Semester) || b.Semester == activeSemester)
+                .ToList();
+        }
 
         public async Task<IEnumerable<BlockDto>> GetMappedBlocksAsync(string? level = null)
         {
@@ -84,16 +95,23 @@ namespace NUPAL.Core.Infrastructure.Services
             var desired = request.DesiredCourseNames ?? [];
             int topN = request.TopN > 0 ? request.TopN : 5;
 
-            var levelBlocks = (await GetBlocksAsync(prefs.Level)).ToList();
+            using var scope = _scopeFactory.CreateScope();
+            var settingsRepo = scope.ServiceProvider.GetRequiredService<ISystemSettingsRepository>();
+            var settings = await settingsRepo.GetSettingsAsync();
+            var activeSemester = settings.ActiveSemester;
+
+            var levelBlocks = (await GetBlocksAsync(prefs.Level))
+                .Where(b => string.IsNullOrEmpty(b.Semester) || b.Semester == activeSemester)
+                .ToList();
+
             if (levelBlocks.Count == 0)
             {
-                _logger.LogWarning("No blocks found for level '{Level}'", prefs.Level);
+                _logger.LogWarning("No blocks found for level '{Level}' in semester '{Semester}'", prefs.Level, activeSemester);
                 return [];
             }
 
             await EnsureCacheAsync(); // Ensure mappings cache is loaded
 
-            using var scope = _scopeFactory.CreateScope();
             var normalizationService = scope.ServiceProvider.GetRequiredService<ICourseNormalizationService>();
 
             var normalizedDesired = await normalizationService.NormalizeToCodesAsync(desired);
@@ -153,6 +171,14 @@ namespace NUPAL.Core.Infrastructure.Services
 
             _logger.LogInformation("Seeded {Count} scheduling blocks into MongoDB", count);
             return count;
+        }
+
+        public async Task<string> GetActiveSemesterAsync()
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var settingsRepo = scope.ServiceProvider.GetRequiredService<ISystemSettingsRepository>();
+            var settings = await settingsRepo.GetSettingsAsync();
+            return settings.ActiveSemester;
         }
 
         public async Task<CategorizedInstructorsDto> GetCategorizedInstructorsAsync(IEnumerable<string> courseNames, string? level = null)
@@ -232,7 +258,7 @@ namespace NUPAL.Core.Infrastructure.Services
                 : [];
         }
 
-        private async Task InvalidateCacheAsync()
+        public async Task InvalidateCacheAsync()
         {
             await _cacheLock.WaitAsync();
             try { _cache.Clear(); _cacheLoaded = false; }
