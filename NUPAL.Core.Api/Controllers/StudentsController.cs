@@ -118,18 +118,21 @@ namespace NUPAL.Core.API.Controllers
                 if (rlRecommendation == null) return NotFound(new { error = "no_recommendation_found" });
 
                 var mappings = await mappingRepo.GetAllAsync();
-                
-                var displayCourses = rlRecommendation.Courses.Select(c => 
+
+                var displayCourses = rlRecommendation.Courses.Select(c =>
                 {
                     var lower = c.Trim().ToLower();
-                    var mapping = mappings.FirstOrDefault(m => 
+                    var mapping = mappings.FirstOrDefault(m =>
                         (m.CourseCode != null && m.CourseCode.ToLower() == lower) ||
-                        (m.PolicyName != null && m.PolicyName.ToLower() == lower) ||
-                        (m.BlockNames != null && m.BlockNames.Any(b => b.ToLower() == lower))
+                        m.GetAllNames().Any(n => n.ToLower() == lower)
                     );
-                    
-                    // Return the clear PolicyName if found, otherwise fallback to the raw course code
-                    return (mapping != null && !string.IsNullOrWhiteSpace(mapping.PolicyName)) ? mapping.PolicyName : c;
+
+                    if (mapping != null)
+                    {
+                        return mapping.CourseCode;
+                    }
+
+                    return c; // fallback: return raw code as-is
                 }).Distinct().ToList();
 
                 return Ok(new
